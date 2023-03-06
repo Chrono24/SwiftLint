@@ -174,6 +174,7 @@ let builtInRules: [Rule.Type] = [
     ReturnArrowWhitespaceRule.self,
     ReturnValueFromVoidFunctionRule.self,
     SelfBindingRule.self,
+    SelfCapturingClosureRule.self,
     SelfInPropertyInitializationRule.self,
     ShorthandOperatorRule.self,
     ShorthandOptionalBindingRule.self,
