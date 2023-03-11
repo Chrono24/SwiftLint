@@ -55,7 +55,7 @@ private extension SelfCapturingClosureRule {
                 guard let expr = item.expression.as(IdentifierExprSyntax.self) else {
                     return false
                 }
-                return expr.identifier.tokenKind == .keyword(.Self)
+                return expr.identifier.text == "self"
             } ?? false
 
             // allow explicit capture with "[self]", "[unowned self]" or "[weak self]"
@@ -88,7 +88,7 @@ private final class SelfReferenceVisitor: SyntaxVisitor {
     }
 
     override func visitPost(_ node: IdentifierExprSyntax) {
-        if node.identifier.tokenKind == .keyword(.Self) {
+        if node.identifier.text == "self" {
             foundSelfReferences.insert(node)
         }
     }
