@@ -82,7 +82,7 @@ private final class SelfReferenceVisitor: SyntaxVisitor {
         super.init(viewMode: .sourceAccurate)
     }
 
-    override func visit(_ node: CodeBlockSyntax) -> SyntaxVisitorContinueKind {
+    override func visit(_ node: ClosureExprSyntax) -> SyntaxVisitorContinueKind {
         // ignore nested closures
         .skipChildren
     }
