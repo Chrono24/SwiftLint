@@ -9,6 +9,11 @@ class SwiftLintFileTests: XCTestCase {
         try "let i = 2".data(using: .utf8)!.write(to: tempFile)
     }
 
+    override func tearDown() async throws {
+        try FileManager.default.removeItem(at: tempFile)
+        try await super.tearDown()
+    }
+
     func testFileFromStringUpdate() {
         let file = SwiftLintFile(contents: "let i = 1")
 

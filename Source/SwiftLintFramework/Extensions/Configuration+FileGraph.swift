@@ -56,8 +56,8 @@ public extension Configuration {
             )
         }
 
-        internal func includesFile(atPath path: String) -> Bool? {
-            guard isBuilt else { return nil }
+        internal func includesFile(atPath path: String) -> Bool {
+            guard isBuilt else { return false }
 
             return vertices.contains { vertix in
                 if case let .existing(filePath) = vertix.filePath {

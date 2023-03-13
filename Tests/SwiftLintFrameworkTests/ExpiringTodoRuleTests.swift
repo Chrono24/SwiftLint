@@ -2,13 +2,7 @@
 import XCTest
 
 class ExpiringTodoRuleTests: XCTestCase {
-    private lazy var config: Configuration = makeConfiguration()
-
-    override func setUp() {
-        super.setUp()
-
-        config = makeConfiguration()
-    }
+    private var config: Configuration = makeConfiguration()
 
     func testExpiringTodo() {
         verifyRule(ExpiringTodoRule.description, commentDoesntViolate: false)
@@ -36,7 +30,7 @@ class ExpiringTodoRuleTests: XCTestCase {
     }
 
     func testNonExpiredTodo() {
-        let example = Example("fatalError() // TODO: [\(dateString(for: nil))] Implement")
+        let example = Example("fatalError() // TODO: [\(dateString(for: .badFormatting))] Implement")
         XCTAssertEqual(violations(example).count, 0)
     }
 
@@ -44,7 +38,7 @@ class ExpiringTodoRuleTests: XCTestCase {
         let ruleConfig: ExpiringTodoConfiguration = .init(
             dateDelimiters: .init(opening: "<", closing: ">")
         )
-        config = makeConfiguration(with: ruleConfig)
+        config = Self.makeConfiguration(with: ruleConfig)
 
         let example = Example("fatalError() // TODO: <\(dateString(for: .expired))> Implement")
         let violations = self.violations(example)
@@ -57,7 +51,7 @@ class ExpiringTodoRuleTests: XCTestCase {
             dateFormat: "MM-dd-yyyy",
             dateSeparator: "-"
         )
-        config = makeConfiguration(with: ruleConfig)
+        config = Self.makeConfiguration(with: ruleConfig)
 
         let example = Example("fatalError() // TODO: [\(dateString(for: .expired))] Implement")
         let violations = self.violations(example)
@@ -69,7 +63,7 @@ class ExpiringTodoRuleTests: XCTestCase {
         let ruleConfig: ExpiringTodoConfiguration = .init(
             dateFormat: "yyyy/MM/dd"
         )
-        config = makeConfiguration(with: ruleConfig)
+        config = Self.makeConfiguration(with: ruleConfig)
 
         let example = Example("fatalError() // TODO: [\(dateString(for: .expired))] Implement")
         let violations = self.violations(example)
@@ -138,7 +132,7 @@ class ExpiringTodoRuleTests: XCTestCase {
         let ruleConfig: ExpiringTodoConfiguration = .init(
             dateFormat: "dd/yyyy/MM"
         )
-        config = makeConfiguration(with: ruleConfig)
+        config = Self.makeConfiguration(with: ruleConfig)
 
         let example = Example("fatalError() // TODO: [31/01/2020] Implement")
         let violations = self.violations(example)
@@ -150,24 +144,24 @@ class ExpiringTodoRuleTests: XCTestCase {
         return SwiftLintFrameworkTests.violations(example, config: config)
     }
 
-    private func dateString(for status: ExpiringTodoRule.ExpiryViolationLevel?) -> String {
+    private func dateString(for status: ExpiringTodoRule.ExpiryViolationLevel) -> String {
         let formatter: DateFormatter = .init()
         formatter.dateFormat = config.ruleConfiguration.dateFormat
 
         return formatter.string(from: date(for: status))
     }
 
-    private func date(for status: ExpiringTodoRule.ExpiryViolationLevel?) -> Date {
+    private func date(for status: ExpiringTodoRule.ExpiryViolationLevel) -> Date {
         let ruleConfiguration = config.ruleConfiguration
 
         let daysToAdvance: Int
 
         switch status {
-        case .approachingExpiry?:
+        case .approachingExpiry:
             daysToAdvance = ruleConfiguration.approachingExpiryThreshold
-        case .expired?:
+        case .expired:
             daysToAdvance = 0
-        case .badFormatting?, nil:
+        case .badFormatting:
             daysToAdvance = ruleConfiguration.approachingExpiryThreshold + 1
         }
 
@@ -179,7 +173,7 @@ class ExpiringTodoRuleTests: XCTestCase {
             )!
     }
 
-    private func makeConfiguration(with ruleConfiguration: ExpiringTodoConfiguration? = nil) -> Configuration {
+    private static func makeConfiguration(with ruleConfiguration: ExpiringTodoConfiguration? = nil) -> Configuration {
         var serializedConfig: [String: Any]?
 
         if let config = ruleConfiguration {
